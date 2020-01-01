@@ -1,9 +1,11 @@
 #!/bin/bash
+#
 # Input parameters:
 #	$1:	SHA-1 ID of commit 1
 #	$2:	SHA-1 ID of commit 2
 #	$3: folder for storing diff files
-# Types of git diff result
+#
+# Types of git diff result:
 #	https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
 
 ERR_VCS=1
