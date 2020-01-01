@@ -1,12 +1,15 @@
 #!/bin/bash
 #
 # Input parameters:
-#	$1:	SHA-1 ID of commit 1
-#	$2:	SHA-1 ID of commit 2
+#	$1:	SHA-1 key of commit 1
+#	$2:	SHA-1 key of commit 2
 #	$3: folder for storing diff files
 #
 # Types of git diff result:
 #	https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
+#
+# Types of git object
+#	https://git-scm.com/book/en/v2/Git-Internals-Git-Objects
 
 ERR_VCS=1
 ERR_INPUT=2
@@ -33,29 +36,65 @@ fi
 if !(mkdir -p $3 &> /dev/null); then
 	echo "Error: create $3 failed"
 	exit ${ERR_INPUT}
+else
+	ORIG_DIR=$3/origin
+	PATCH_DIR=$3/patch
 fi
 
-# Obtain git diff results between two commits
-DIFF_RESULTS=`git diff --name-status ${1} ${2}`
-#DIFF_RESULTS=`git diff -C --name-status ${1} ${2}`
+# Generate file from blob object
+# Parameters:
+#	$1: file mode
+#	$2: SHA-1 key of blob object
+#	$3: file path
+function gen_file()
+{
+	# Create parent folder
+	mkdir -p "$(dirname "$3")"
 
-while IFS=$'\t' read -r -a DIFF_FILE ; do
-	DIFF_TYPE=${DIFF_FILE[0]}
+	# Obtain file and change its mode
+	git cat-file blob $2 > $3
+	chmod ${1:3:6} $3
+}
+
+# Obtain git diff results between two commits 
+DIFF_RESULTS=`git diff --raw $1 $2`
+
+# Parse git diff results line by line and generate files from blob object
+while IFS=$'\t :' read -r -a DIFF_FILE ; do
+	DIFF_TYPE=${DIFF_FILE[5]}
 	case "${DIFF_TYPE::1}" in
 		M)	# Modified
-			echo "${DIFF_FILE[1]} is modified";;
+			#echo "(M)odify ${DIFF_FILE[6]}"
+			gen_file ${DIFF_FILE[1]} ${DIFF_FILE[3]} $ORIG_DIR/${DIFF_FILE[6]}
+			gen_file ${DIFF_FILE[2]} ${DIFF_FILE[4]} $PATCH_DIR/${DIFF_FILE[6]}
+			;;
 		R)	# Renamed
-			echo "Move ${DIFF_FILE[1]} to ${DIFF_FILE[2]}";;
+			#echo "(R)ename ${DIFF_FILE[6]} to ${DIFF_FILE[7]}"
+			gen_file ${DIFF_FILE[1]} ${DIFF_FILE[3]} $ORIG_DIR/${DIFF_FILE[6]}
+			gen_file ${DIFF_FILE[2]} ${DIFF_FILE[4]} $PATCH_DIR/${DIFF_FILE[7]}
+			;;
 		D)	# Deleted
-			echo "${DIFF_FILE[1]} is deleted";;
+			#echo "(D)elete ${DIFF_FILE[6]}"
+			gen_file ${DIFF_FILE[1]} ${DIFF_FILE[3]} $ORIG_DIR/${DIFF_FILE[6]}
+			;;
 		C)	# Copied
-			echo "Copy ${DIFF_FILE[1]} to ${DIFF_FILE[2]}";;
+			#echo "(C)opy ${DIFF_FILE[6]} to ${DIFF_FILE[7]}"
+			gen_file ${DIFF_FILE[2]} ${DIFF_FILE[4]} $PATCH_DIR/${DIFF_FILE[7]}
+			;;
 		A)	# Added
-			echo "${DIFF_FILE[1]} is added";;
-		T)
-			echo "${DIFF_FILE[1]} is changed";;
+			#echo "(A)dd ${DIFF_FILE[6]}"
+			gen_file ${DIFF_FILE[2]} ${DIFF_FILE[4]} $PATCH_DIR/${DIFF_FILE[6]}
+			;;
+#		T)	# Changed
+#			#echo "(U)Change ${DIFF_FILE[6]}"
+#			;;
+#		U)	# Unmerged
+#			#echo "(U)nmerge ${DIFF_FILE[6]}"
+#			;;
 		*)
-			echo -e "Unknown diff type:\t${DIFF_FILE[0]}\t${DIFF_FILE[1]}\t${DIFF_FILE[2]}"
+			echo -e "\e[0;31mWARNING: ${DIFF_FILE[1]} ${DIFF_FILE[2]} ${DIFF_FILE[3]} "\
+				"${DIFF_FILE[4]} ${DIFF_FILE[5]}\t${DIFF_FILE[6]}\t${DIFF_FILE[7]}\e[0m"
+			;;
 	esac
 done <<< "${DIFF_RESULTS}"
 
