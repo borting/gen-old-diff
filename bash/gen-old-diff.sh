@@ -37,8 +37,8 @@ if !(mkdir -p $3 &> /dev/null); then
 	echo "Error: create $3 failed"
 	exit ${ERR_INPUT}
 else
-	ORIG_DIR=$3/origin
-	PATCH_DIR=$3/patch
+	OLD_DIR=$3/old
+	NEW_DIR=$3/new
 fi
 
 # Generate file from blob object
@@ -65,25 +65,25 @@ while IFS=$'\t :' read -r -a DIFF_FILE ; do
 	case "${DIFF_TYPE::1}" in
 		M)	# Modified
 			#echo "(M)odify ${DIFF_FILE[6]}"
-			gen_file ${DIFF_FILE[1]} ${DIFF_FILE[3]} $ORIG_DIR/${DIFF_FILE[6]}
-			gen_file ${DIFF_FILE[2]} ${DIFF_FILE[4]} $PATCH_DIR/${DIFF_FILE[6]}
+			gen_file ${DIFF_FILE[1]} ${DIFF_FILE[3]} $OLD_DIR/${DIFF_FILE[6]}
+			gen_file ${DIFF_FILE[2]} ${DIFF_FILE[4]} $NEW_DIR/${DIFF_FILE[6]}
 			;;
 		R)	# Renamed
 			#echo "(R)ename ${DIFF_FILE[6]} to ${DIFF_FILE[7]}"
-			gen_file ${DIFF_FILE[1]} ${DIFF_FILE[3]} $ORIG_DIR/${DIFF_FILE[6]}
-			gen_file ${DIFF_FILE[2]} ${DIFF_FILE[4]} $PATCH_DIR/${DIFF_FILE[7]}
+			gen_file ${DIFF_FILE[1]} ${DIFF_FILE[3]} $OLD_DIR/${DIFF_FILE[6]}
+			gen_file ${DIFF_FILE[2]} ${DIFF_FILE[4]} $NEW_DIR/${DIFF_FILE[7]}
 			;;
 		D)	# Deleted
 			#echo "(D)elete ${DIFF_FILE[6]}"
-			gen_file ${DIFF_FILE[1]} ${DIFF_FILE[3]} $ORIG_DIR/${DIFF_FILE[6]}
+			gen_file ${DIFF_FILE[1]} ${DIFF_FILE[3]} $OLD_DIR/${DIFF_FILE[6]}
 			;;
 		C)	# Copied
 			#echo "(C)opy ${DIFF_FILE[6]} to ${DIFF_FILE[7]}"
-			gen_file ${DIFF_FILE[2]} ${DIFF_FILE[4]} $PATCH_DIR/${DIFF_FILE[7]}
+			gen_file ${DIFF_FILE[2]} ${DIFF_FILE[4]} $NEW_DIR/${DIFF_FILE[7]}
 			;;
 		A)	# Added
 			#echo "(A)dd ${DIFF_FILE[6]}"
-			gen_file ${DIFF_FILE[2]} ${DIFF_FILE[4]} $PATCH_DIR/${DIFF_FILE[6]}
+			gen_file ${DIFF_FILE[2]} ${DIFF_FILE[4]} $NEW_DIR/${DIFF_FILE[6]}
 			;;
 #		T)	# Changed
 #			#echo "(U)Change ${DIFF_FILE[6]}"
