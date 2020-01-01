@@ -22,15 +22,15 @@ fi
 
 # Check input parameters
 if [ -z ${3+x} ]; then
-    echo "RUN: create-diff-dirs.sh SHA1 SHA2 dest_folder"
+    echo "RUN: create-diff-dirs.sh COMMIT_1 COMMIT_2 DEST_DIR"
     exit ${ERR_INPUT}
 fi
 if !(git cat-file -e $1 &> /dev/null); then
-	echo "Error: SHA1 is no a valid object"
+	echo "Error: COMMIT_1 is no a valid commit object"
     exit ${ERR_INPUT}
 fi
 if !(git cat-file -e $2 &> /dev/null); then
-	echo "Error: SHA2 is no a valid object"
+	echo "Error: COMMIT_2 is no a valid commit object"
     exit ${ERR_INPUT}
 fi
 if !(mkdir -p $3 &> /dev/null); then
