@@ -4,7 +4,7 @@ Generate old-school patch, a pair of folders containing original and changed fil
 ## Why use this
 Although modern VCS, like git, suggest (and provide commands) to send diff in patch format, some tech engineers still prefer to send diff in a pair of folders, one contains original files and the other contains changed files.
 (The naming of the paired folders are also various, such as old/new, origin/patch, before/after, etc.)
-This project provides a shell script to quickly generate such a old-school patch from two git commits.
+This project provides a shell script to quickly generate such an old-school patch from two git commits.
 
 ## How to use this
 ```
