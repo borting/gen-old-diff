@@ -10,5 +10,5 @@ This project provides a shell script to quickly generate such an old-school patc
 ```
 $ gen-old-diff.sh COMMIT_1 COMMIT_2 DEST_DIR
 ```
-* commit-1 & commit-2 are SHA-1 key of commits
-* dest-dir is the path for saveing original and changed files in a pair of sub-folders, old and new.
+* COMMIT_1 & COMMIT_2 are SHA-1 key of commits
+* DEST_DIR is the path for saveing original and changed files in a pair of sub-folders, old and new.
