@@ -51,7 +51,7 @@ function gen_file()
 	# Create parent folder
 	mkdir -p "$(dirname "$3")"
 
-	# Obtain file and change its mode
+	# Obtain file from blob object and change file mode
 	git cat-file blob $2 > $3
 	chmod ${1:3:6} $3
 }
@@ -59,7 +59,7 @@ function gen_file()
 # Obtain git diff results between two commits 
 DIFF_RESULTS=`git diff --raw $1 $2`
 
-# Parse git diff results line by line and generate files from blob object
+# Parse git diff results line by line and generate files from blob objects
 while IFS=$'\t :' read -r -a DIFF_FILE ; do
 	DIFF_TYPE=${DIFF_FILE[5]}
 	case "${DIFF_TYPE::1}" in
