@@ -14,7 +14,7 @@
 ERR_VCS=1
 ERR_INPUT=2
 
-# Chech current folder is tracked by git
+# Check current folder is tracked by git
 if !(git status -u no &> /dev/null); then
 	echo "ERROR: ${PWD} is not tracked by git"
 	exit ${ERR_VCS}
