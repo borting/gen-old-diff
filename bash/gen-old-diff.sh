@@ -19,6 +19,10 @@ ERR_TEMP=5
 ERR_GIT=6
 ERR_ZIP=7
 
+# Configure the name of output diff directories
+OLD_DIR=${OLD_DIR:-old}
+NEW_DIR=${NEW_DIR:-new}
+
 # Check current folder is tracked by git
 if !(git status -u no &> /dev/null); then
 	echo "ERROR: ${PWD} is not tracked by git"
@@ -53,8 +57,6 @@ fi
 
 # Create temporary directory
 TEMP_DIR=
-OLD_DIR=
-NEW_DIR=
 function gen_temp_dir()
 {
 	TEMP_DIR=`mktemp -d`
@@ -64,8 +66,8 @@ function gen_temp_dir()
 	fi
 
 	# Create old and new directories
-	OLD_DIR=${TEMP_DIR}/old
-	NEW_DIR=${TEMP_DIR}/new
+	OLD_DIR=${TEMP_DIR}/${OLD_DIR}
+	NEW_DIR=${TEMP_DIR}/${NEW_DIR}
 	mkdir -p ${OLD_DIR} ${NEW_DIR}
 	return 0
 }
