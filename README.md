@@ -1,5 +1,5 @@
 # gen-old-diff
-Save the changes between two git commits into a pair of folders, one contains original files and the other contains changed.
+Save the changes between two git commits into a pair of folders, one contains original files and the other contains changed files.
 
 ## Purpose
 When backporting fixes/features to an eariler release, some engineers prefer to review patches by putting original files in one folder and changed files to another folder, and comparing them using diff tools, like Meld, WinMerge, etc.
