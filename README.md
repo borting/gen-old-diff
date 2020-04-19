@@ -2,7 +2,7 @@
 Save the changes between two git commits into a pair of folders, one contains original files and the other contains changed files.
 
 ## Purpose
-When backporting fixes/features to an eariler release, some engineers prefer to review patches in an ordinary diff format -- putting original files in one folder and changed files in another folder.
+When backporting fixes/features to an eariler release, some engineers prefer to review patches in an ordinary diff format, putting original files in one folder and changed files in another folder.
 This helps them to use comparison tools, like Meld, WinMerge and KDiff3, to merge changes back to the earlier release. 
 This project provides a script to generate such an ordinary diff from two git commits.
 The output structure would be like:
