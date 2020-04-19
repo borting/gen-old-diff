@@ -60,7 +60,7 @@ For example, saving diff results to _original/_ and _patch/_ folders
 $ OLD_DIR=original NEW_DIR=patch gen-old-diff.sh c3fb102 103756c /home/user/diff_results.zip
 ```
 
-### Diff Results Double-Checking
+### Diff Results Double Checking
 To double check diff results, specifing diff tools in **DIRDIFFTOOL** environment variable.
 
 Example1: Use [Meld](https://meldmerge.org/) for double checking
