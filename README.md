@@ -9,14 +9,12 @@ The structure of output would be like:
 diff/
 |--- old/
   |--- fileA.c
-  |--- fileB.c
   |--- dir1/
-    |-- fileC.c
+    |-- fileB.c
 |--- new/
   |--- fileA.c
-  |--- fileB.c
   |--- dir1/
-    |-- fileC.c
+    |-- fileB.c
 ```
 
 ## Usage
@@ -30,7 +28,7 @@ Example1: Put diff results to a folder
 ```console
 $ gen-old-diff.sh c3fb102 103756c /home/user/diff_results
 ```
-Example2: Compress diff results to a tar.gz file
+Example2: Compress diff results to a gzip file
 ```console
 $ gen-old-diff.sh c3fb102 103756c /home/user/diff_results.tar.gz
 ```
