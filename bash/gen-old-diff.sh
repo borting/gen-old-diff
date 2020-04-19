@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 #
 # Input parameters:
 #	$1:	SHA-1 key of commit 1
