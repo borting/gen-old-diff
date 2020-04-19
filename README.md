@@ -35,6 +35,7 @@ Example2: Compress diff results to a gzip file
 ```console
 $ gen-old-diff.sh c3fb102 103756c /home/user/diff_results.tar.gz
 ```
+![img](https://github.com/borting/gen-old-diff/wiki/images/demo_gen_gzip.gif)
 
 ### Supported Compression Format
 The compression format that this script executes depeneds on the file extension specifed in **OUTPUT**.
