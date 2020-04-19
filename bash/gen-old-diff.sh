@@ -51,8 +51,12 @@ if !(git cat-file -e ${COMMIT_2} &> /dev/null); then
 fi
 
 # Check output directory is valid
-OUT_DIR=$(dirname $3)
 OUT_FILE=$(basename $3)
+if [[ $3 == /* ]]; then
+	OUT_DIR=$(dirname $3)
+else
+	OUT_DIR=`pwd`/$(dirname $3)
+fi
 if !(mkdir -p ${OUT_DIR} &> /dev/null); then
 	echo "Error: create ${OUT_DIR} failed"
 	exit ${ERR_DEST}
