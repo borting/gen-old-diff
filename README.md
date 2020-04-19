@@ -2,7 +2,7 @@
 Generate a pair of folders, containing original and changed files, from two git commits.
 
 ## Purpose
-Some engineers prefer to review diffs by putting original files in one folder and changed files to another folder, and comparing them using diff tools (like Meld, WinMerge, etc.), especially when backporting to an earlier version.
+When backporting fixes/features to an eariler release, some engineers prefer to review diffs by putting original files in one folder and changed files to another folder, and comparing them using diff tools, like Meld, WinMerge, etc.
 This project provides a script to quickly generate such a patch from two git commits.
 The structure of output would be like:
 ```
