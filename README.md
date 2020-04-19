@@ -29,13 +29,14 @@ $ gen-old-diff.sh COMMIT_1 COMMIT_2 OUTPUT
 
 Example1: Put diff results to a folder
 ```console
-$ gen-old-diff.sh c3fb102 103756c /home/user/diff_results
+$ gen-old-diff.sh c3fb102 103756c /tmp/output/diff_results
 ```
 Example2: Compress diff results to a gzip file
 ```console
-$ gen-old-diff.sh c3fb102 103756c /home/user/diff_results.tar.gz
+$ gen-old-diff.sh c3fb102 103756c /tmp/output/diff.tar.gz
 ```
-![img](https://github.com/borting/gen-old-diff/wiki/images/demo_gen_gzip.gif)
+Example3: Compress diff results to a zip file
+![img](https://github.com/borting/gen-old-diff/wiki/images/demo_gen_zip.gif)
 
 ### Supported Compression Format
 The compression format that this script executes depeneds on the file extension specifed in **OUTPUT**.
