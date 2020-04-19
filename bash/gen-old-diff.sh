@@ -140,7 +140,6 @@ function check_diff_files() {
 	if [ ! -z ${DIRDIFFTOOL+x} ]; then
 		${DIRDIFFTOOL} ${1} ${2}
 	fi
-	#vim -c "set diffopt+=iwhite" -c "DirDiff ${1} ${2}"
 }
 
 # Check compression command is supported
