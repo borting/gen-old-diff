@@ -1,14 +1,78 @@
 # gen-old-diff
-Generate old-school patch, a pair of folders containing original and changed files, from two git commits.
+Generate a pair of folders, containing original and changed files, from two git commits.
 
-## Why use this
-Although modern VCS, like git, suggest (and provide commands) to send diff in patch format, some tech engineers still prefer to send diff in a pair of folders, one contains original files and the other contains changed files.
-(The naming of the paired folders are also various, such as old/new, origin/patch, before/after, etc.)
-This project provides a shell script to quickly generate such an old-school patch from two git commits.
-
-## How to use this
+## Purpose
+Some engineers prefer to review diffs by putting original files in one folder and changed files to another, and comparing them using diff tools (like Meld, WinMerge, etc.), especially when backporting to an earlier version.
+This project provides a script to quickly generate such a patch from two git commits.
+The structure of output would be like:
 ```
-$ gen-old-diff.sh COMMIT_1 COMMIT_2 DEST_DIR
+diff/
+|--- old/
+  |--- fileA.c
+  |--- fileB.c
+  |--- dir1/
+    |-- fileC.c
+|--- new/
+  |--- fileA.c
+  |--- fileB.c
+  |--- dir1/
+    |-- fileC.c
+```
+
+## Usage
+```console
+$ gen-old-diff.sh COMMIT_1 COMMIT_2 OUTPUT
 ```
 * COMMIT_1 and COMMIT_2 are SHA-1 key of commits.
-* DEST_DIR is the path to the paired folders, old and new, which saves original and changed files accordingly. 
+* OUTPUT could be a folder or a compressed file, depends on the file extension user specified.
+
+Example1: Put diff results to a folder
+```console
+$ gen-old-diff.sh c3fb102 103756c /home/user/diff_results
+```
+Example2: Compress diff results to a tar.gz file
+```console
+$ gen-old-diff.sh c3fb102 103756c /home/user/diff_results.tar.gz
+```
+
+### Supported Compression Format
+The compression method that this script executes depeneds on the file extension specifed in **OUTPUT**.
+If the file extension does not match any valid compression method, the results would be a folder.
+Currently, the following compression methods and file extension are supported:
+| Compression Method  | File Extension |
+| :------------------ | :------------- |
+| gzip | .tar.gz, .tgz |
+| xz | .tar.xz, .txz |
+| bzip2 | .tar.bz2, .tbz2 |
+| compress | .tar.Z |
+| Zip | .zip |
+| 7-Zip | .7z |
+| RAR | .rar |
+
+### Name of Result Folders
+By default, the script saves the original files to **_old/_** folder and the changed files to **_new/_** folder.
+The folder name can be configured by the following environment variables:
+```
+OLD_DIR=old_dir_name
+NEW_DIR=new_dir_name
+```
+For example, saving diff results to _original/_ and _patch/_
+```console
+$ OLD_DIR=original NEW_DIR=patch gen-old-diff.sh c3fb102 103756c /home/user/diff_results.zip
+```
+
+### Diff Results Double-Checking
+To double check diff results, specifing diff tools in **DIRDIFFTOOL** environment variable.
+
+Example1: Use [Meld](https://meldmerge.org/) for double checking
+```console
+$ DIRDIFFTOLL=meld gen-old-diff.sh c3fb102 103756c /home/user/diff_results.zip
+```
+Example2: Using **vimdiff** with [dirdiff plugin](https://github.com/will133/vim-dirdiff) by adding following to **_~/.bashrc_**
+```
+function dirdiff() {
+  vim -c "set diffopt+=iwhite" -c "DirDiff ${1} ${2}"
+}
+export -f dirdiff
+export DIRDIFFTOOL=dirdiff
+```
