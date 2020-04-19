@@ -23,6 +23,9 @@ ERR_ZIP=7
 OLD_DIR=${OLD_DIR:-old}
 NEW_DIR=${NEW_DIR:-new}
 
+# Configure tool for diff checking
+DIRDIFFTOOL=${DIRDIFFTOOL:-}
+
 # Check current folder is tracked by git
 if !(git status -u no &> /dev/null); then
 	echo "ERROR: ${PWD} is not tracked by git"
@@ -134,7 +137,10 @@ function gen_diff_files_to_dirs() {
 
 # Check diff results
 function check_diff_files() {
-	vim -c "set diffopt+=iwhite" -c "DirDiff ${1} ${2}"
+	if [ ! -z ${DIRDIFFTOOL+x} ]; then
+		${DIRDIFFTOOL} ${1} ${2}
+	fi
+	#vim -c "set diffopt+=iwhite" -c "DirDiff ${1} ${2}"
 }
 
 # Check compression command is supported
