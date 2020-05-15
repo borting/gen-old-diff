@@ -90,7 +90,7 @@ function get_file()
 	mkdir -p "$(dirname "$3")"
 
 	# Obtain file from blob object and change file mode
-	git cat-file blob $2 > $3
+	git cat-file blob ${2:0:7} > $3
 	chmod ${1:3:6} $3
 }
 
