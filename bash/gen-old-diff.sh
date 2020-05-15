@@ -34,7 +34,7 @@ fi
 
 # Check input parameters
 if [ $# -ne 3 ]; then
-	echo "RUN: create-diff-dirs.sh COMMIT_1 COMMIT_2 PATH_TO_OUTPUT_FILE"
+	echo "RUN: `basename "$0"` COMMIT_1 COMMIT_2 PATH_TO_OUTPUT_FILE"
     exit ${ERR_INPUT}
 fi
 
