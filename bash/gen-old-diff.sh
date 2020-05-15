@@ -141,7 +141,7 @@ function gen_diff_files_to_dirs() {
 
 # Check diff results
 function check_diff_files() {
-	if [ ! -z ${DIRDIFFTOOL+x} ]; then
+	if [ ! -z ${DIRDIFFTOOL} ]; then
 		${DIRDIFFTOOL} ${1} ${2}
 	fi
 }
