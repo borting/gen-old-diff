@@ -33,7 +33,7 @@ if !(git status -u no &> /dev/null); then
 fi
 
 # Check input parameters
-if [ -z ${3+x} ]; then
+if [ $# -ne 3 ]; then
 	echo "RUN: create-diff-dirs.sh COMMIT_1 COMMIT_2 PATH_TO_OUTPUT_FILE"
     exit ${ERR_INPUT}
 fi
@@ -168,7 +168,7 @@ function run()
 	check_diff_files ${OLD_DIR} ${NEW_DIR}
 	
 	# Run compresiion if method is specified
-	if [ ! -z ${1+x} ]; then
+	if [ $# -ne 0 ]; then
 		cd ${TEMP_DIR}
 		${1} ${OUT_DIR}/${OUT_FILE} * || RETVAL=$ERR_ZIP
 		cd -
