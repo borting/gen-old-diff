@@ -21,6 +21,7 @@ ERR_DEST=4
 ERR_TEMP=5
 ERR_GIT=6
 ERR_ZIP=7
+ERR_USR=8
 
 # Configure the name of output diff directories
 OLD_DIR=${OLD_DIR:-old}
@@ -145,8 +146,10 @@ function gen_diff_files_to_dirs() {
 # Check diff results
 function check_diff_files() {
 	if [ ! -z ${DIRDIFFTOOL} ]; then
-		${DIRDIFFTOOL} ${1} ${2}
+		${DIRDIFFTOOL} ${1} ${2} || { echo "Abort diff generation."; return 1; }
 	fi
+
+	return 0
 }
 
 # Check compression command is supported
@@ -168,7 +171,7 @@ function run()
 	gen_diff_files_to_dirs || (rm -rf ${TEMP_DIR}; return $ERR_GIT)
 
 	# Check generated diff results
-	check_diff_files ${OLD_DIR} ${NEW_DIR}
+	check_diff_files ${OLD_DIR} ${NEW_DIR} || { rm -rf ${TEMP_DIR}; return $ERR_USR; }
 	
 	# Run compresiion if method is specified
 	if [ $# -ne 0 ]; then
