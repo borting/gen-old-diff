@@ -72,7 +72,7 @@ function dirdiff() {
 export -f dirdiff
 export DIRDIFFTOOL=dirdiff
 ```
-To abort diff generation, type ":cq" on exiting vim
+-- This also supports aborting diff generation by typing ":cq" on exit.
 
 Example1: Use [Meld](https://meldmerge.org/) for double checking
 ```console
