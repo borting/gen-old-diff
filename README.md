@@ -74,7 +74,7 @@ export DIRDIFFTOOL=dirdiff
 ```
 -- This also supports aborting diff generation by typing ":cq" on exit.
 
-Example1: Use [Meld](https://meldmerge.org/) for double checking
+Example2: Use [Meld](https://meldmerge.org/) for double checking
 ```console
 $ DIRDIFFTOLL=meld gen-old-diff.sh c3fb102 103756c /home/user/diff_results.zip
 ```
