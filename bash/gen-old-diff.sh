@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright 2020, Borting Chen <bortingchen@gmail.com>
+#
+# This file is licensed under the GPL v2,
 #
 # Input parameters:
 #	$1:	SHA-1 key of commit 1
