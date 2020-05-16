@@ -156,7 +156,7 @@ function check_diff_files() {
 function has()
 {
 	which $1 > /dev/null \
-		&& return 0 || (echo "Error: $1 is not supported"; return 1)
+		&& return 0 || { echo "Error: $1 is not supported"; return 1; }
 }
 
 # Execute diff generation and compression
@@ -168,7 +168,7 @@ function run()
 	gen_temp_dir || return $ERR_TEMP
 
 	# Generate old-school diff to temporary directory
-	gen_diff_files_to_dirs || (rm -rf ${TEMP_DIR}; return $ERR_GIT)
+	gen_diff_files_to_dirs || { rm -rf ${TEMP_DIR}; return $ERR_GIT; }
 
 	# Check generated diff results
 	check_diff_files ${OLD_DIR} ${NEW_DIR} || { rm -rf ${TEMP_DIR}; return $ERR_USR; }
