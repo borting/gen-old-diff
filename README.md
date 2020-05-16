@@ -64,15 +64,17 @@ $ OLD_DIR=original NEW_DIR=patch gen-old-diff.sh c3fb102 103756c /home/user/diff
 ### Diff Results Double Checking
 To double check diff results, specifing diff tools in **DIRDIFFTOOL** environment variable.
 
-Example1: Use [Meld](https://meldmerge.org/) for double checking
-```console
-$ DIRDIFFTOLL=meld gen-old-diff.sh c3fb102 103756c /home/user/diff_results.zip
-```
-Example2: Using **vimdiff** with [dirdiff plugin](https://github.com/will133/vim-dirdiff) by adding the following to **_~/.bashrc_**
+Example1: Using **vimdiff** with [dirdiff plugin](https://github.com/will133/vim-dirdiff) by adding the following to **_~/.bashrc_**
 ```
 function dirdiff() {
   vim -c "set diffopt+=iwhite" -c "DirDiff ${1} ${2}"
 }
 export -f dirdiff
 export DIRDIFFTOOL=dirdiff
+```
+To abort diff generation, type ":cq" on exiting vim
+
+Example1: Use [Meld](https://meldmerge.org/) for double checking
+```console
+$ DIRDIFFTOLL=meld gen-old-diff.sh c3fb102 103756c /home/user/diff_results.zip
 ```
