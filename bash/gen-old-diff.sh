@@ -36,15 +36,21 @@ if !(git status -u no &> /dev/null); then
 	exit ${ERR_VCS}
 fi
 
-# Check input parameters
-if [ $# -ne 3 ]; then
-	echo "RUN: `basename "$0"` COMMIT_1 COMMIT_2 PATH_TO_OUTPUT_FILE"
+# Check the number of input parameters
+if [ $# -ne 2 ]  && [ $# -ne 3 ] ; then
+	echo "RUN: `basename "$0"` PATH_TO_OUTPUT_FILE COMMIT_1 [COMMIT_2]"
     exit ${ERR_INPUT}
 fi
 
-# Check commit ID is valid
-COMMIT_1=$1
-COMMIT_2=$2
+COMMIT_1=$2
+COMMIT_2=$3
+# If COMMIT_2 is empty, generate diff b/w {COMMIT_1}~1 and {COMMIT_1}
+if [ -z ${COMMIT_2} ]; then
+	COMMIT_2=${COMMIT_1}
+	COMMIT_1="${COMMIT_1}~1"
+fi
+
+# Check commit IDs are valid
 if !(git cat-file -e ${COMMIT_1} &> /dev/null); then
 	echo "Error: COMMIT_1 is no a valid commit object"
     exit ${ERR_SHAID}
@@ -55,11 +61,11 @@ if !(git cat-file -e ${COMMIT_2} &> /dev/null); then
 fi
 
 # Check output directory is valid
-OUT_FILE=$(basename $3)
+OUT_FILE=$(basename $1)
 if [[ $3 == /* ]]; then
-	OUT_DIR=$(dirname $3)
+	OUT_DIR=$(dirname $1)
 else
-	OUT_DIR=`pwd`/$(dirname $3)
+	OUT_DIR=`pwd`/$(dirname $1)
 fi
 if !(mkdir -p ${OUT_DIR} &> /dev/null); then
 	echo "Error: create ${OUT_DIR} failed"
