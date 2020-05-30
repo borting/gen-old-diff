@@ -2,9 +2,9 @@
 
 import git
 import os
-import pathlib
 import stat
 import sys
+from pathlib import Path
 
 def get_file_from_blob(mode, blob, path):
     # Create sub-dir
@@ -29,13 +29,27 @@ def gen_diff_files(diffIdx, dir_old, dir_new, gen_old=None, gen_new=None):
     if gen_new:
         get_file_from_blob(diffIdx.b_mode, diffIdx.b_blob, dir_new + diffIdx.b_path)
 
+def check_output(path):
+    out_file = path.name
+    # TODO: use try ... except (FileExistsError, FileNotFoundError)
+    if path.parents[0].exists():
+        out_dir = path.parents[0].mkdir(parents=True, exist_ok=True)
+    out_dir = path.parents[0]
+
+    return out_dir, out_file
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 3 and len(sys.argv) != 4:
         print("RUN: gen-old-diff.py PATH_TO_OUTPUT_FILE COMMIT_1 [COMMIT_2]")
 
-    # FIXME: should point to the root of a git repos
-    output = sys.argv[1]
-    repo = git.Repo(pathlib.Path().absolute())
+    # FIXME: check cwd is a git repo
+    cwd = os.getcwd()
+    repo = git.Repo(cwd)
+
+    # Parse and check output directoy and output file name
+    out_dir, out_file = check_output(Path(sys.argv[1]).absolute())
+    print(out_dir, out_file)
 
     dir_old = sys.argv[1] + "/old/"
     dir_new = sys.argv[1] + "/new/"
