@@ -41,8 +41,15 @@ if __name__ == "__main__":
     if len(sys.argv) != 3 and len(sys.argv) != 4:
         print("RUN: gen-old-diff.py PATH_TO_OUTPUT_FILE COMMIT_1 [COMMIT_2]")
 
-    # FIXME: check cwd is a git repo
-    repo = git.Repo(Path().absolute())
+    # Check current working dir is a valid repos
+    try:
+        repo = git.Repo(Path())
+    except git.exc.InvalidGitRepositoryError as err:
+        print("Error: {} is not a git repository".format(err))
+        sys.exit(1)
+    except git.exc.NoSuchPathError as err:
+        print("Error: {} does not exist".format(err))
+        sys.exit(1)
 
     # Parse and check output directoy and output file name
     out_dir, out_file = check_output(Path(sys.argv[1]).absolute())
