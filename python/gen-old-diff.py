@@ -6,6 +6,7 @@
 #
 
 import git
+import gitdb
 import stat
 import sys
 from pathlib import Path
@@ -36,6 +37,23 @@ def check_output(path):
 
     return out_dir, out_file
 
+class CommitIdException(Exception):
+    def __init__(self, msg):
+        super().__init__(msg)
+
+def check_commit(repo, rev):
+    try:
+        commit = repo.commit(rev)
+#    except gitdb.exc.BadName as err:
+#        print("Error: {} is not a valid commit ID".format(err.args[0]))
+#        raise CommitIdException(rev)
+#    except ValueError as err:
+#        print("Error: {} is not a valid commit ID".format(err.args[5:45]))
+#        raise CommitIdException(rev)
+    except Exception as err:
+        raise CommitIdException(rev)
+
+    return commit
 
 if __name__ == "__main__":
     if len(sys.argv) != 3 and len(sys.argv) != 4:
@@ -51,20 +69,24 @@ if __name__ == "__main__":
         print("Error: {} does not exist".format(err))
         sys.exit(1)
 
+    # Check commit IDs are valid
+    if len(sys.argv) == 4:
+        commit_old = repo.commit(sys.argv[2])
+        commit_new = repo.commit(sys.argv[3])
+    else:
+        commit_new = repo.commit(sys.argv[2])
+        try:
+            commit_old = commit_new.parents[0]
+        except IndexError as err:
+            print("Error: {} is the first commit".format(sys.argv[2]))a
+            sys.exit(1)
+
     # Parse and check output directoy and output file name
     out_dir, out_file = check_output(Path(sys.argv[1]).absolute())
     print(out_dir, out_file)
 
     dir_old = sys.argv[1] + "/old/"
     dir_new = sys.argv[1] + "/new/"
-
-    # TODO: exception handling
-    if len(sys.argv) == 4:
-        commit_old = repo.commit(sys.argv[2])
-        commit_new = repo.commit(sys.argv[3])
-    else:
-        commit_new = repo.commit(sys.argv[2])
-        commit_old = commit_new.parents[0]
 
     for diffIndex in commit_old.diff(commit_new):
         #print(diffIndex.change_type)
