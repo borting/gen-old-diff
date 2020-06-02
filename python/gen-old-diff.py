@@ -44,15 +44,10 @@ class CommitIdException(Exception):
 def check_commit(repo, rev):
     try:
         commit = repo.commit(rev)
-#    except gitdb.exc.BadName as err:
-#        print("Error: {} is not a valid commit ID".format(err.args[0]))
-#        raise CommitIdException(rev)
-#    except ValueError as err:
-#        print("Error: {} is not a valid commit ID".format(err.args[5:45]))
-#        raise CommitIdException(rev)
-    except Exception as err:
+    except ValueError as err:   # the input 40-digit hex number string is invalid
         raise CommitIdException(rev)
-
+    except gitdb.exc.BadName as err:    # the input commit ID (after parsing) is invalid
+        raise CommitIdException(rev)
     return commit
 
 if __name__ == "__main__":
@@ -70,16 +65,20 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Check commit IDs are valid
-    if len(sys.argv) == 4:
-        commit_old = repo.commit(sys.argv[2])
-        commit_new = repo.commit(sys.argv[3])
-    else:
-        commit_new = repo.commit(sys.argv[2])
-        try:
-            commit_old = commit_new.parents[0]
-        except IndexError as err:
-            print("Error: {} is the first commit".format(sys.argv[2]))a
-            sys.exit(1)
+    try:
+        if len(sys.argv) == 4:
+            commit_old = check_commit(repo, sys.argv[2])
+            commit_new = check_commit(repo, sys.argv[3])
+        else:
+            commit_new = check_commit(repo, sys.argv[2])
+            try:
+                commit_old = commit_new.parents[0]
+            except IndexError as err:
+                print("Error: {} is the first commit".format(sys.argv[2]))
+                sys.exit(1)
+    except CommitIdException as err:
+        print("Error: {} is not a valid commit ID".format(err))
+        sys.exit(1)
 
     # Parse and check output directoy and output file name
     out_dir, out_file = check_output(Path(sys.argv[1]).absolute())
