@@ -83,8 +83,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Parse and check output directoy and output file name
-    out_dir, out_file = check_output(Path(sys.argv[1]).absolute())
-    print(out_dir, out_file)
+    out_dir, out_file = check_output(Path(sys.argv[1]).resolve())
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         dir_old = Path(tmp_dir + "/old/")
