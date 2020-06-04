@@ -9,6 +9,7 @@ import git
 import gitdb
 import stat
 import sys
+import tempfile
 from pathlib import Path
 
 def get_file_from_blob(mode, blob, path):
@@ -21,12 +22,13 @@ def get_file_from_blob(mode, blob, path):
         
     # Change file permission
     path.chmod(mode & 0o777)
+    print(path)
 
 def gen_diff_files(diffIdx, dir_old, dir_new, gen_old=None, gen_new=None):
     if gen_old:
-        get_file_from_blob(diffIdx.a_mode, diffIdx.a_blob, Path(dir_old + diffIdx.a_path))
+        get_file_from_blob(diffIdx.a_mode, diffIdx.a_blob, dir_old.joinpath(diffIdx.a_path))
     if gen_new:
-        get_file_from_blob(diffIdx.b_mode, diffIdx.b_blob, Path(dir_new + diffIdx.b_path))
+        get_file_from_blob(diffIdx.b_mode, diffIdx.b_blob, dir_new.joinpath(diffIdx.b_path))
 
 def check_output(path):
     out_file = path.name
@@ -84,17 +86,26 @@ if __name__ == "__main__":
     out_dir, out_file = check_output(Path(sys.argv[1]).absolute())
     print(out_dir, out_file)
 
-    dir_old = sys.argv[1] + "/old/"
-    dir_new = sys.argv[1] + "/new/"
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        dir_old = Path(tmp_dir + "/old/")
+        dir_new = Path(tmp_dir + "/new/")
 
-    for diffIndex in commit_old.diff(commit_new):
-        #print(diffIndex.change_type)
-        action = {
-                "M": {"gen_old": True, "gen_new": True},
-                "R": {"gen_old": True, "gen_new": True},
-                "D": {"gen_old": True, "gen_new": False},
-                "C": {"gen_old": False, "gen_new": True},
-                "A": {"gen_old": False, "gen_new": True}
-        }.get(diffIndex.change_type, None)
-        gen_diff_files(diffIndex, dir_old, dir_new, **action)
+        for diffIndex in commit_old.diff(commit_new):
+            #print(diffIndex.change_type)
+            action = {
+                    "M": {"gen_old": True, "gen_new": True},
+                    "R": {"gen_old": True, "gen_new": True},
+                    "D": {"gen_old": True, "gen_new": False},
+                    "C": {"gen_old": False, "gen_new": True},
+                    "A": {"gen_old": False, "gen_new": True}
+                    }.get(diffIndex.change_type, None)
+            gen_diff_files(diffIndex, dir_old, dir_new, **action)
+
+        try:
+            dir_old.rename(out_dir/out_file/dir_old.name)
+            dir_new.rename(out_dir/out_file/dir_new.name)
+        except OSError as err:
+            print("Error: {} is not empty".format(err.filename2))
+
+
 
