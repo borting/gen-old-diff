@@ -31,13 +31,11 @@ def gen_diff_files(diffIdx, dir_old, dir_new, gen_old=None, gen_new=None):
         get_file_from_blob(diffIdx.b_mode, diffIdx.b_blob, dir_new.joinpath(diffIdx.b_path))
 
 def check_output(path):
-    out_file = path.name
+    # Check if parent dir exists
     # TODO: use try ... except (FileExistsError, FileNotFoundError)
     if path.parents[0].exists():
-        out_dir = path.parents[0].mkdir(parents=True, exist_ok=True)
-    out_dir = path.parents[0]
-
-    return out_dir, out_file
+        path.parents[0].mkdir(parents=True, exist_ok=True)
+    return path.parents[0]
 
 class CommitIdException(Exception):
     def __init__(self, msg):
@@ -83,7 +81,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Parse and check output directoy and output file name
-    out_dir, out_file = check_output(Path(sys.argv[1]).resolve())
+    out_file = Path(sys.argv[1]).resolve()
+    check_output(out_file)
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         dir_old = Path(tmp_dir + "/old/")
@@ -101,10 +100,8 @@ if __name__ == "__main__":
             gen_diff_files(diffIndex, dir_old, dir_new, **action)
 
         try:
-            dir_old.rename(out_dir/out_file/dir_old.name)
-            dir_new.rename(out_dir/out_file/dir_new.name)
+            dir_old.rename(out_file/dir_old.name)
+            dir_new.rename(out_file/dir_new.name)
         except OSError as err:
             print("Error: {} is not empty".format(err.filename2))
-
-
 
