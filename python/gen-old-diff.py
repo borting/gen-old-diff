@@ -132,7 +132,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Check output parent directoy and compression method
-    out_file = Path(sys.argv[1]).resolve()
+    out_file = Path(sys.argv[1])
     out_ext = check_output(out_file)
     print(out_ext)
 
