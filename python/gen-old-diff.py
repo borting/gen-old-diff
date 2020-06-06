@@ -95,6 +95,12 @@ def check_commit(repo, rev):
         raise CommitIdException(rev)
     return commit
 
+def no_compress(out_file, tmp_dir):
+    out_file.mkdir(parents=False, exist_ok=True)
+
+    for path in tmp_dir.glob("*"):
+        path.rename(out_file/path.name)
+
 if __name__ == "__main__":
     if len(sys.argv) != 3 and len(sys.argv) != 4:
         print("RUN: gen-old-diff.py PATH_TO_OUTPUT_FILE COMMIT_1 [COMMIT_2]")
@@ -145,9 +151,5 @@ if __name__ == "__main__":
                     }.get(diffIndex.change_type, None)
             gen_diff_files(diffIndex, dir_old, dir_new, **action)
 
-        try:
-            dir_old.rename(out_file/dir_old.name)
-            dir_new.rename(out_file/dir_new.name)
-        except OSError as err:
-            print("Error: {} is not empty".format(err.filename2))
-
+        if out_ext == OutExt.DIR:
+            no_compress(out_file, Path(tmp_dir))
