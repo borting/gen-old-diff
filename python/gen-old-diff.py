@@ -11,6 +11,7 @@ import stat
 import sys
 import tarfile
 import tempfile
+import zipfile
 from enum import IntEnum
 from pathlib import Path
 
@@ -109,6 +110,16 @@ def gen_tar_compress(mode):
 
     return tar_compress
 
+def zip_compress(out_file, tmp_dir):
+    try:
+        with zipfile.ZipFile(str(out_file), "x", zipfile.ZIP_DEFLATED) as zf:
+            for path in tmp_dir.glob("**/*"):
+                if path.is_file():
+                    zf.write(str(path), str(path.relative_to(tmp_dir)))
+                    print(path.relative_to(tmp_dir))
+    except FileExistsError as err:
+        print("{} exists".format(err.filename))
+
 def no_compress(out_file, tmp_dir):
     out_file.mkdir(parents=False, exist_ok=True)
 
@@ -173,5 +184,7 @@ if __name__ == "__main__":
             compress = gen_tar_compress("x:xz")
         elif out_ext == OutExt.TBZ2:
             compress = gen_tar_compress("x:bz2")
+        elif out_ext == OutExt.ZIP:
+            compress = zip_compress
 
         compress = compress(out_file, Path(tmp_dir))
