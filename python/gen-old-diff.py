@@ -9,6 +9,7 @@ import git
 import gitdb
 import stat
 import sys
+import tarfile
 import tempfile
 from enum import IntEnum
 from pathlib import Path
@@ -95,6 +96,19 @@ def check_commit(repo, rev):
         raise CommitIdException(rev)
     return commit
 
+def gen_tar_compress(mode):
+    def tar_compress(out_file, tmp_dir):
+        try:
+            with tarfile.open(str(out_file), mode) as tf:
+                for path in tmp_dir.glob("**/*"):
+                    if path.is_file():
+                        tf.add(str(path), str(path.relative_to(tmp_dir)))
+                        print(path.relative_to(tmp_dir))
+        except FileExistsError as err:
+            print("{} exists".format(err.filename))
+
+    return tar_compress
+
 def no_compress(out_file, tmp_dir):
     out_file.mkdir(parents=False, exist_ok=True)
 
@@ -152,4 +166,12 @@ if __name__ == "__main__":
             gen_diff_files(diffIndex, dir_old, dir_new, **action)
 
         if out_ext == OutExt.DIR:
-            no_compress(out_file, Path(tmp_dir))
+            compress = no_compress
+        elif out_ext == OutExt.TGZ:
+            compress = gen_tar_compress("x:gz")
+        elif out_ext == OutExt.TXZ:
+            compress = gen_tar_compress("x:xz")
+        elif out_ext == OutExt.TBZ2:
+            compress = gen_tar_compress("x:bz2")
+
+        compress = compress(out_file, Path(tmp_dir))
