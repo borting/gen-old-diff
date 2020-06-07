@@ -33,37 +33,28 @@ def gen_diff_files(diffIdx, dir_old, dir_new, gen_old=None, gen_new=None):
         get_file_from_blob(diffIdx.b_mode, diffIdx.b_blob, dir_new.joinpath(diffIdx.b_path))
 
 def no_compress(out_file):
+    out_file.mkdir(parents=False, exist_ok=False)
     def func(tmp_dir):
-        out_file.mkdir(parents=False, exist_ok=True)
         for path in tmp_dir.glob("*"):
             path.rename(out_file/path.name)
-
     return func
 
 def tar_compress(out_file, mode):
+    out_file.touch(exist_ok=False)
     def func(tmp_dir):
-        try:
-            with tarfile.open(str(out_file), mode) as tf:
-                for path in tmp_dir.glob("**/*"):
-                    if path.is_file():
-                        tf.add(str(path), str(path.relative_to(tmp_dir)))
-                        print(path.relative_to(tmp_dir))
-        except FileExistsError as err:
-            print("{} exists".format(err.filename))
-
+        with tarfile.open(str(out_file), mode) as tf:
+            for path in tmp_dir.glob("**/*"):
+                if path.is_file():
+                    tf.add(str(path), str(path.relative_to(tmp_dir)))
     return func
 
 def zip_compress(out_file):
+    out_file.touch(exist_ok=False)
     def func(tmp_dir):
-        try:
-            with zipfile.ZipFile(str(out_file), "x", zipfile.ZIP_DEFLATED) as zf:
-                for path in tmp_dir.glob("**/*"):
-                    if path.is_file():
-                        zf.write(str(path), str(path.relative_to(tmp_dir)))
-                        print(path.relative_to(tmp_dir))
-        except FileExistsError as err:
-            print("{} exists".format(err.filename))
-
+        with zipfile.ZipFile(str(out_file), "w", zipfile.ZIP_DEFLATED) as zf:
+            for path in tmp_dir.glob("**/*"):
+                if path.is_file():
+                    zf.write(str(path), str(path.relative_to(tmp_dir)))
     return func
 
 class UnsupportCompressException(Exception):
@@ -81,25 +72,26 @@ def check_output(path):
         path.parents[0].mkdir(parents=True, exist_ok=True)
 
     # Parse file extension
-    suffixes = "".join(path.suffixes)
-    compress = {
-        "": no_compress(out_file),
-        ".tar.gz": tar_compress(out_file, "x:gz"),
-        ".tgz": tar_compress(out_file, "x:gz"),
-        ".tar.xz": tar_compress(out_file, "x:xz"),
-        ".txz": tar_compress(out_file, "x:xz"),
-        ".tar.bz2": tar_compress(out_file, "x:bz2"),
-        ".tbz2": tar_compress(out_file, "x:bz2"),
-        ".tar.Z": UnsupportCompressException(suffixes),
-        ".zip": zip_compress(out_file),
-        ".7z": UnsupportCompressException(suffixes),
-        ".rar": UnsupportCompressException(suffixes)
-    }.get(suffixes, UnknownCompressException(suffixes))
+    ext = "".join(path.suffixes)
 
-    if isinstance(compress, Exception):
-        raise compress
-
-    return compress
+    if ext == "":
+        return no_compress(out_file)
+    elif (ext == ".tar.gz") or (ext == ".tgz"):
+        return tar_compress(out_file, "w:gz")
+    elif (ext == ".tar.xz") or (ext == ".txz"):
+        return tar_compress(out_file, "w:xz")
+    elif (ext == ".tar.bz2") or (ext == ".tbz2"):
+        return tar_compress(out_file, "w:bz2")
+    elif (ext == ".tar.Z"):
+        raise UnsupportCompressException(ext)
+    elif (ext == ".zip"):
+        return zip_compress(out_file)
+    elif (ext == ".7z"):
+        raise UnsupportCompressException(ext)
+    elif (ext == ".rar"):
+        raise UnsupportCompressException(ext)
+    else:
+        raise UnknownCompressException(ext)
 
 class CommitIdException(Exception):
     def __init__(self, msg):
@@ -144,7 +136,7 @@ if __name__ == "__main__":
         print("Error: {} is not a valid commit ID".format(err))
         sys.exit(1)
 
-    # Check output parent directoy and compression method
+    # Check output file, parent directoy and compression method
     out_file = Path(sys.argv[1])
     try:
         compress = check_output(out_file)
@@ -154,7 +146,11 @@ if __name__ == "__main__":
     except UnsupportCompressException as err:
         print("Error: Compress to {} is not supported".format(err))
         sys.exit(1)
+    except FileExistsError as err:
+        print("Error {} exists".format(err.filename))
+        sys.exit(1)
 
+    # Extract files to temp directoy, then execute compression
     with tempfile.TemporaryDirectory() as tmp_dir:
         dir_old = Path(tmp_dir + "/old/")
         dir_new = Path(tmp_dir + "/new/")
