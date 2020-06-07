@@ -146,7 +146,14 @@ if __name__ == "__main__":
 
     # Check output parent directoy and compression method
     out_file = Path(sys.argv[1])
-    compress = check_output(out_file)
+    try:
+        compress = check_output(out_file)
+    except UnknownCompressException as err:
+        print("Error: Unknow compression format {}".format(err))
+        sys.exit(1)
+    except UnsupportCompressException as err:
+        print("Error: Compress to {} is not supported".format(err))
+        sys.exit(1)
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         dir_old = Path(tmp_dir + "/old/")
