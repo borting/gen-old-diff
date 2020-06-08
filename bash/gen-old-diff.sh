@@ -185,7 +185,7 @@ function run()
 		${1} ${OUT_DIR}/${OUT_FILE} * || RETVAL=$ERR_ZIP
 		cd -
 	else
-		mv ${TEMP_DIR} ${OUT_DIR}/${OUT_FILE}
+		mv ${TEMP_DIR}/* ${OUT_DIR}/${OUT_FILE}
 	fi
 
 	# Remove temporary directory
