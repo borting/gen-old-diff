@@ -62,7 +62,7 @@ fi
 
 # Check output directory is valid
 OUT_FILE=$(basename $1)
-if [[ $3 == /* ]]; then
+if [[ $1 == /* ]]; then
 	OUT_DIR=$(dirname $1)
 else
 	OUT_DIR=`pwd`/$(dirname $1)
