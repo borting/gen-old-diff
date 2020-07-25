@@ -38,25 +38,24 @@ fi
 
 # Check the number of input parameters
 if [ $# -ne 2 ]  && [ $# -ne 3 ] ; then
-	echo "RUN: `basename "$0"` PATH_TO_OUTPUT_FILE COMMIT_1 [COMMIT_2]"
+	echo "RUN: `basename "$0"` PATH_TO_OUTPUT_FILE COMMIT_NEW [COMMIT_OLD]"
     exit ${ERR_INPUT}
 fi
 
-COMMIT_1=$2
-COMMIT_2=$3
-# If COMMIT_2 is empty, generate diff b/w {COMMIT_1}~1 and {COMMIT_1}
-if [ -z ${COMMIT_2} ]; then
-	COMMIT_2=${COMMIT_1}
-	COMMIT_1="${COMMIT_1}~1"
+COMMIT_NEW=$2
+COMMIT_OLD=$3
+# If COMMIT_OLD is empty, generate diff b/w {COMMIT_NEW}~1 and {COMMIT_NEW}
+if [ -z ${COMMIT_OLD} ]; then
+	COMMIT_OLD="${COMMIT_NEW}~1"
 fi
 
 # Check commit IDs are valid
-if !(git cat-file -e ${COMMIT_1} &> /dev/null); then
-	echo "Error: COMMIT_1 is no a valid commit object"
+if !(git cat-file -e ${COMMIT_NEW} &> /dev/null); then
+	echo "Error: COMMIT_NEW is no a valid commit object"
     exit ${ERR_SHAID}
 fi
-if !(git cat-file -e ${COMMIT_2} &> /dev/null); then
-	echo "Error: COMMIT_2 is no a valid commit object"
+if !(git cat-file -e ${COMMIT_OLD} &> /dev/null); then
+	echo "Error: COMMIT_OLD is no a valid commit object"
     exit ${ERR_SHAID}
 fi
 
@@ -107,7 +106,7 @@ function get_file()
 # Extract files having difference and store them into OLD_DIR and NEW_DIR
 function gen_diff_files_to_dirs() {
 	# Obtain git diff results between two commits 
-	DIFF_RESULTS=`git diff --raw ${COMMIT_1} ${COMMIT_2}`
+	DIFF_RESULTS=`git diff --raw ${COMMIT_OLD} ${COMMIT_NEW}`
 	
 	# Parse git diff results line by line and generate files from blob objects
 	while IFS=$'\t :' read -r -a DIFF_FILE ; do
