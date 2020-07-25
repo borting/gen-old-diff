@@ -1,11 +1,6 @@
-# gen-old-diff
-Save the changes between two git commits into a pair of folders, one contains original files and the other contains changed files.
-
-## Purpose
-When backporting fixes/features to an eariler release, some engineers prefer to review patches in an ordinary diff format, putting original files in one folder and changed files in another folder.
-This helps them to use comparison tools, like Meld, WinMerge and KDiff3, to merge changes back to the earlier release. 
-This project provides a script to generate such an ordinary diff from two git commits.
-The output structure would be like:
+# Generate Old Diff
+Save the changes between two git commits into a pair of folders, one contains modified files and the other contains their original copy, and archive the folders to a compressed file.
+The file structure in the output would be like:
 ```
 diff/
 |-- old/
@@ -22,26 +17,13 @@ diff/
 
 ## Usage
 ```console
-$ gen-old-diff.sh COMMIT_1 COMMIT_2 OUTPUT
+$ gen-old-diff.sh OUTPUT COMMIT_NEW [COMMIT_OLD]
 ```
-* COMMIT_1 and COMMIT_2 are SHA-1 key of git commits.
-* OUTPUT could be a folder or a compressed file, depends on the file extension user specified.
-
-Example1: Put diff results to a folder
-```console
-$ gen-old-diff.sh c3fb102 103756c /tmp/output/diff_results
-```
-Example2: Compress diff results to a gzip file
-```console
-$ gen-old-diff.sh c3fb102 103756c /tmp/output/diff.tar.gz
-```
-Example3: Compress diff results to a zip file
-![img](https://github.com/borting/gen-old-diff/wiki/images/demo_gen_zip.gif)
+* OUTPUT could be a folder or a compressed file, depends on the specified file extension. If the file extension does not match any valid compression method, the results would be a folder.
+* COMMIT_NEW and COMMIT_OLD could be commit IDs or tags. If COMMIT_OLD is omitted, then difference between COMMIT_NEW and COMMIT_NEW~1 are generated.
 
 ### Supported Compression Format
-The compression format that this script executes depeneds on the file extension specifed in **OUTPUT**.
-If the file extension does not match any valid compression method, the results would be a folder.
-Currently, the following compression formats and file extension are supported:
+Currently, the script supports following compression formats and file extension:
 | Compression Format | File Extension |
 | :------------------ | :------------- |
 | gzip | .tar.gz, .tgz |
@@ -53,12 +35,12 @@ Currently, the following compression formats and file extension are supported:
 | RAR | .rar |
 
 ### Name of Result Folders
-By default, the script saves the original files to **_old/_** folder and the changed files to **_new/_** folder.
-The folder name can be configured by **OLD_DIR** and **NEW_DIR** variables.
+By default, the script saves the original files to **_old/_** folder and the modified files to **_new/_** folder.
+The folder name can be configured by **OLD_DIR** and **NEW_DIR** environment variables.
 
-For example, saving diff results to _original/_ and _patch/_ folders
+For example, saving diff results to _original/_ and _modified/_ folders
 ```console
-$ OLD_DIR=original NEW_DIR=patch gen-old-diff.sh c3fb102 103756c /home/user/diff_results.zip
+$ OLD_DIR=original NEW_DIR=modified gen-old-diff.sh /home/user/diff_results.zip c3fb102 103756c
 ```
 
 ### Diff Results Double Checking
@@ -76,5 +58,5 @@ export DIRDIFFTOOL=dirdiff
 
 Example2: Use [Meld](https://meldmerge.org/) for double checking
 ```console
-$ DIRDIFFTOLL=meld gen-old-diff.sh c3fb102 103756c /home/user/diff_results.zip
+$ DIRDIFFTOLL=meld gen-old-diff.sh /home/user/diff_results.zip c3fb102 103756c
 ```
