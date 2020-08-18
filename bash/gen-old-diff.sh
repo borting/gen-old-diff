@@ -1,12 +1,12 @@
 #!/bin/bash
 # Copyright 2020, Borting Chen <bortingchen@gmail.com>
 #
-# This file is licensed under the GPL v2,
+# This file is licensed under the GPL v2.
 #
 # Input parameters:
-#	$1:	SHA-1 key of commit 1
-#	$2:	SHA-1 key of commit 2
-#	$3: folder for storing diff files
+#	$1: Path to output dir or compressed file storing diff results
+#	$2: SHA-1 ID of modified commit
+#	$3: SHA-1 ID of original commit
 #
 # Types of git diff result:
 #	https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
@@ -14,6 +14,7 @@
 # Types of git object
 #	https://git-scm.com/book/en/v2/Git-Internals-Git-Objects
 
+# Error code
 ERR_VCS=1
 ERR_INPUT=2
 ERR_SHAID=3
