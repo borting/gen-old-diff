@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-	# Copyright 2020, Borting Chen <bortingchen@gmail.com>
-	#
-	# This file is licensed under the GPL v2.
--->
 <ui version="4.0">
  <class>mainWindow</class>
  <widget class="QMainWindow" name="mainWindow">
@@ -214,7 +209,7 @@
       </layout>
      </item>
      <item>
-      <widget class="Line" name="line">
+      <widget class="Line" name="line_1">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -249,7 +244,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Output Location:</string>
+          <string>Output Directory:</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -309,7 +304,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Filename:</string>
+          <string>Output Filename:</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -477,18 +472,30 @@
      <height>25</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuPrefer">
+    <property name="title">
+     <string>Preference</string>
+    </property>
+    <addaction name="actionPreview"/>
+    <addaction name="separator"/>
+    <addaction name="actionPrefer"/>
+   </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
     <addaction name="actionHelp"/>
     <addaction name="separator"/>
-    <addaction name="actionPreference"/>
-    <addaction name="separator"/>
     <addaction name="actionAbout"/>
    </widget>
+   <addaction name="menuPrefer"/>
    <addaction name="menuHelp"/>
   </widget>
+  <action name="actionPrefer">
+   <property name="text">
+    <string>Preference</string>
+   </property>
+  </action>
   <action name="actionHelp">
    <property name="text">
     <string>Help</string>
@@ -497,14 +504,20 @@
     <string>F1</string>
    </property>
   </action>
-  <action name="actionPreference">
-   <property name="text">
-    <string>Preference</string>
-   </property>
-  </action>
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionPreview">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Preview Always</string>
+   </property>
+   <property name="toolTip">
+    <string>Preview</string>
    </property>
   </action>
  </widget>
