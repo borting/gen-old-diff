@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+	# Copyright 2020, Borting Chen <bortingchen@gmail.com>
+	#
+	# This file is licensed under the GPL v2.
+-->
 <ui version="4.0">
  <class>mainWindow</class>
  <widget class="QMainWindow" name="mainWindow">
@@ -476,27 +481,27 @@
     <property name="title">
      <string>Preference</string>
     </property>
-    <addaction name="actionPreview"/>
+    <addaction name="forcePrevAction"/>
     <addaction name="separator"/>
-    <addaction name="actionPrefer"/>
+    <addaction name="preferAction"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionHelp"/>
+    <addaction name="helpAction"/>
     <addaction name="separator"/>
-    <addaction name="actionAbout"/>
+    <addaction name="aboutAction"/>
    </widget>
    <addaction name="menuPrefer"/>
    <addaction name="menuHelp"/>
   </widget>
-  <action name="actionPrefer">
+  <action name="preferAction">
    <property name="text">
     <string>Preference</string>
    </property>
   </action>
-  <action name="actionHelp">
+  <action name="helpAction">
    <property name="text">
     <string>Help</string>
    </property>
@@ -504,17 +509,17 @@
     <string>F1</string>
    </property>
   </action>
-  <action name="actionAbout">
+  <action name="aboutAction">
    <property name="text">
     <string>About</string>
    </property>
   </action>
-  <action name="actionPreview">
+  <action name="forcePrevAction">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Preview Always</string>
+    <string>Preview Before Generation</string>
    </property>
    <property name="toolTip">
     <string>Preview</string>
