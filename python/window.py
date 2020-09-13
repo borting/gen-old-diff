@@ -33,6 +33,18 @@ class GodMainWin(QMainWindow):
         self.outDirBtn.clicked.connect(self._getOutDir)
         self.previewBtn.clicked.connect(lambda: self._generate(preview=True))
         self.generateBtn.clicked.connect(lambda: self._generate(preview=False))
+        self.aboutAction.triggered.connect(self._actAbout)
+
+    def _actAbout(self, checked):
+        aboutStr = """
+        <center>
+        <h4>Generate Old-style Diff</h4>
+        <p>v2.0</p>
+        <p><a href="https://github.com/borting/gen-old-diff">GOD GitHub</a></p>
+        <p>Copyright \N{COPYRIGHT SIGN} 2020 Borting Chen</p>
+        """
+        QMessageBox.about(self, "About GOD", aboutStr)
+
     def _getGitRepoDir(self):
         gitRepoDig = QFileDialog()
         gitRepoDig.setFileMode(QFileDialog.Directory)
