@@ -71,4 +71,4 @@ def main(sysArgv):
     god.generate(action)
 
 if __name__ == "__main__":
-    mian(sys.argv)
+    main(sys.argv)
