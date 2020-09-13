@@ -6,12 +6,14 @@
 # This file is licensed under the GPL v2.
 #
 
+import subprocess
+import sys
+
 from enum import IntEnum
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from pathlib import Path
 
-import sys
 from core import *
 
 class GodMainWin(QMainWindow):
@@ -21,17 +23,19 @@ class GodMainWin(QMainWindow):
         # Load ui file
         uic.loadUi(str(Path(__file__).parents[0]/"window.ui"), self)
 
-        # Disable preview
-        self.previewBtn.setEnabled(False)
-
         # Adjust height if a global menubar is used
         if self.menuBar.isNativeMenuBar():
             self.setMaximumHeight(self.height() - self.menuBar.height())
 
+        # Set default value
+        self._previewCmd = "/usr/bin/meld"
+        self._oldDirName = "old"
+        self._newDirName = "new"
+
         # Connect signals and slots
         self.gitRepoBtn.clicked.connect(self._getGitRepoDir)
         self.outDirBtn.clicked.connect(self._getOutDir)
-        self.previewBtn.clicked.connect(lambda: self._generate(preview=True))
+        self.previewBtn.clicked.connect(self._preview)
         self.generateBtn.clicked.connect(lambda: self._generate(preview=False))
         self.aboutAction.triggered.connect(self._actAbout)
 
@@ -97,6 +101,27 @@ class GodMainWin(QMainWindow):
             QMessageBox.critical(self, "Error", warnStr)
 
         return warnStr
+
+
+    def _preview(self):
+        if self._checkLineEdit(preview=True):
+            return
+
+        try:
+            if self.oldCmtEdit.text():
+                g = GOD(self.gitRepoEdit.text(), self.newCmtEdit.text(), self.oldCmtEdit.text())
+            else:
+                g = GOD(self.gitRepoEdit.text(), self.newCmtEdit.text())
+
+            def previewCmd(tmpDir):
+                subprocess.call([self._previewCmd,
+                    str(tmpDir/self._oldDirName), str(tmpDir/self._newDirName)])
+            g.generate(previewCmd)
+
+        except GitRepoException as err:
+            QMessageBox.critical(self, "Error", err)
+        except CommitIdException as err:
+            QMessageBox.critical(self, "Error", err)
 
     def _generate(self, preview):
         # Check LineEdit are not empty according to selection
