@@ -21,9 +21,7 @@ def _parseSysArgv(argv):
     parser.add_argument('COMMIT_NEW', type=str, help=" ID/tag of modified commit")
     parser.add_argument('COMMIT_OLD', nargs='?', type=str, help="ID/tag of original commit")
 
-    temp = parser.parse_args(argv[1:])
-    print(temp)
-    return vars(temp)
+    return vars(parser.parse_args(argv[1:]))
 
 def main(sysArgv):
     argv = _parseSysArgv(sysArgv)
