@@ -6,7 +6,6 @@
 # This file is licensed under the GPL v2.
 #
 
-import subprocess
 import sys
 
 from enum import IntEnum
@@ -113,10 +112,8 @@ class GodMainWin(QMainWindow):
             else:
                 g = GOD(self.gitRepoEdit.text(), self.newCmtEdit.text())
 
-            def previewCmd(tmpDir):
-                subprocess.call([self._previewCmd,
-                    str(tmpDir/self._oldDirName), str(tmpDir/self._newDirName)])
-            g.generate(previewCmd)
+            action = genPreviewAction([self._previewCmd])
+            g.generate(action)
 
         except GitRepoException as err:
             QMessageBox.critical(self, "Error", err)

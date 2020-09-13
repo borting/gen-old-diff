@@ -8,6 +8,7 @@
 
 import git
 import gitdb
+import subprocess
 import tarfile
 import tempfile
 import zipfile
@@ -82,16 +83,17 @@ class GOD():
                     self._getFileFromBlob(diffIdx.b_mode, diffIdx.b_blob, newDir/diffIdx.b_path)
 
             # Handle files in difference
-            action(tmpDir)
+            action(oldDir, newDir)
 
 def genDiffDirs(outFile):
-    def action(tmpDir):
-        for path in tmpDir.glob("*"):
-            path.rename(outFile/path.name)
+    def action(oldDir, newDir):
+        oldDir.rename(outFile/oldDir.name)
+        newDir.rename(outFile/newDir.name)
     return action
     
 def genTarCompress(outFile, mode):
-    def action(tmpDir):
+    def action(oldDir, newDir):
+        tmpDir = oldDir.parents[0]
         with tarfile.open(str(outFile), mode) as tf:
             for path in tmpDir.glob("**/*"):
                 if path.is_file():
@@ -99,11 +101,18 @@ def genTarCompress(outFile, mode):
     return action
 
 def genZipCompress(outFile):
-    def action(tmpDir):
+    def action(oldDir, newDir):
+        tmpDir = oldDir.parents[0]
         with zipfile.ZipFile(str(outFile), "w", zipfile.ZIP_DEFLATED) as zf:
             for path in tmpDir.glob("**/*"):
                 if path.is_file():
                     zf.write(str(path), str(path.relative_to(tmpDir)))
+    return action
+
+def genPreviewAction(previewCmd):
+    def action(oldDir, newDir):
+        previewCmd.extend([str(oldDir), str(newDir)])
+        subprocess.call(previewCmd)
     return action
 
 if __name__ == "__main__":
