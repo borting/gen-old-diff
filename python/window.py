@@ -29,12 +29,11 @@ class GodMainWin(QMainWindow):
             self.setMaximumHeight(self.height() - self.menuBar.height())
 
         # Connect signals and slots
-        self.gitRepoBtn.clicked.connect(self.getGitRepoDir)
-        self.outDirBtn.clicked.connect(self.getOutDir)
+        self.gitRepoBtn.clicked.connect(self._getGitRepoDir)
+        self.outDirBtn.clicked.connect(self._getOutDir)
         self.previewBtn.clicked.connect(lambda: self._generate(preview=True))
         self.generateBtn.clicked.connect(lambda: self._generate(preview=False))
-
-    def getGitRepoDir(self):
+    def _getGitRepoDir(self):
         gitRepoDig = QFileDialog()
         gitRepoDig.setFileMode(QFileDialog.Directory)
 
@@ -49,7 +48,7 @@ class GodMainWin(QMainWindow):
         if gitRepoDir:
             self.gitRepoEdit.setText(gitRepoDir)
 
-    def getOutDir(self):
+    def _getOutDir(self):
         outDig = QFileDialog()
         outDig.setFileMode(QFileDialog.Directory)
 
