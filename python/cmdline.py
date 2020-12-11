@@ -27,7 +27,10 @@ def main(sysArgv):
     argv = _parseSysArgv(sysArgv)
 
     try:
-        god = GOD(Path(argv["repos"]).resolve(), argv["COMMIT_NEW"], argv["COMMIT_OLD"])
+        if argv["COMMIT_OLD"]:
+            god = GOD(Path(argv["repos"]).resolve(), argv["COMMIT_NEW"], argv["COMMIT_OLD"] + "^")
+        else:
+            god = GOD(Path(argv["repos"]).resolve(), argv["COMMIT_NEW"], argv["COMMIT_NEW"] + "^")
     except GitRepoException as err:
         print(err)
         sys.exit(1)

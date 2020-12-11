@@ -24,7 +24,7 @@ class CommitIdException(Exception):
         super().__init__(msg)
 
 class GOD():
-    def __init__(self, repoPath, newCmt, oldCmt=None):
+    def __init__(self, repoPath, newCmt, oldCmt):
 
         # Check git repos is valid
         try:
@@ -39,13 +39,7 @@ class GOD():
 
         # Check commit IDs are valid
         self._newCmt = self._checkCommit(newCmt)
-        if oldCmt:
-            self._oldCmt = self._checkCommit(oldCmt)
-        else:
-            try:
-                self._oldCmt = self._newCmt.parents[0]
-            except IndexError as err:
-                raise CommitIdException("Error: {} is the first commit".format(newCmt))
+        self._oldCmt = self._checkCommit(oldCmt)
 
     def _checkCommit(self, rev):
         try:

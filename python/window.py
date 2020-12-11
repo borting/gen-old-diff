@@ -127,9 +127,9 @@ class GodMainWin(QMainWindow):
 
         try:
             if self.oldCmtEdit.text():
-                g = GOD(self.gitRepoEdit.text(), self.newCmtEdit.text(), self.oldCmtEdit.text())
+                g = GOD(self.gitRepoEdit.text(), self.newCmtEdit.text(), self.oldCmtEdit.text() + "^")
             else:
-                g = GOD(self.gitRepoEdit.text(), self.newCmtEdit.text())
+                g = GOD(self.gitRepoEdit.text(), self.newCmtEdit.text(), self.newCmtEdit.text() + "^")
 
             if not preview:
                 ext = self.outFileExtCombo.currentText()
