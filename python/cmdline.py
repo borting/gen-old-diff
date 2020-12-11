@@ -14,10 +14,10 @@ from pathlib import Path
 def _parseSysArgv(argv):
     parser = argparse.ArgumentParser(prog=Path(argv[0]).name)
     #parser.add_argument('-p', '--preview', type=str, help="Path to the tool for diff results preview", dest="preview", metavar="PREVIEW_TOOL")
+    parser.add_argument('-o', '--output', type=str, help="Path to output directory/file", default="", dest="output", metavar="OUTPUT")
     parser.add_argument('-r', '--repos', type=str, help="Path to Git repository", default="", dest="repos", metavar="GIT_REPOS")
     parser.add_argument('--new', type=str, help="Name of the dir saving modified files", default="new", dest="newDir", metavar="DIR_NAME")
     parser.add_argument('--old', type=str, help="Name of the dir saving original files", default="old", dest="oldDir", metavar="DIR_NAME")
-    parser.add_argument('OUTPUT', type=str, help="Path to output dir/file")
     parser.add_argument('COMMIT_NEW', type=str, help=" ID/tag of modified commit")
     parser.add_argument('COMMIT_OLD', nargs='?', type=str, help="ID/tag of original commit")
 
@@ -39,7 +39,11 @@ def main(sysArgv):
         sys.exit(1)
 
     # Check output file/dir
-    outFile = Path(argv["OUTPUT"])
+    if not argv["output"]:
+        print("Error: No output directory/file specified")
+        sys.exit(1)
+
+    outFile = Path(argv["output"])
     ext = "".join(outFile.suffixes)
 
     if not ext:
