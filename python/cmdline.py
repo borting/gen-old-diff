@@ -69,7 +69,7 @@ def main(sysArgv):
         print("Error: File already exists: '{}'".format(err.filename))
         sys.exit(1)
     except FileNotFoundError as err:
-        print("Error: No such directory '()'".format(Path(err.filename).parents[0]))
+        print("Error: No such directory '{}'".format(Path(err.filename).parents[0]))
         sys.exit(1)
 
     # Generate diff files to output
