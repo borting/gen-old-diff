@@ -37,6 +37,23 @@ if !(git status -u no &> /dev/null); then
 	exit ${ERR_VCS}
 fi
 
+# Parse input options
+REL_DIR=
+while getopts "ap:" opt; do
+  case $opt in
+    p)
+      REL_DIR="$OPTARG"
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+
+# Shift processed options and their arguments from the positional parameters
+shift $((OPTIND - 1))
+
 # Check the number of input parameters
 if [ $# -ne 2 ]  && [ $# -ne 3 ] ; then
 	echo "RUN: `basename "$0"` PATH_TO_OUTPUT_FILE COMMIT_NEW [COMMIT_OLD]"
@@ -83,8 +100,8 @@ function gen_temp_dir()
 	fi
 
 	# Create old and new directories
-	OLD_DIR=${TEMP_DIR}/${OLD_DIR}
-	NEW_DIR=${TEMP_DIR}/${NEW_DIR}
+	OLD_DIR=${TEMP_DIR}/${OLD_DIR}/${REL_DIR}
+	NEW_DIR=${TEMP_DIR}/${NEW_DIR}/${REL_DIR}
 	mkdir -p ${OLD_DIR} ${NEW_DIR}
 	return 0
 }
