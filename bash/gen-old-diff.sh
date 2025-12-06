@@ -38,9 +38,13 @@ if !(git status -u no &> /dev/null); then
 fi
 
 # Parse input options
+APPEND=0
 REL_DIR=
 while getopts "ap:" opt; do
   case $opt in
+    a)
+      APPEND=1
+      ;;
     p)
       REL_DIR="$OPTARG"
       ;;
@@ -89,6 +93,36 @@ if !(mkdir -p ${OUT_DIR} &> /dev/null); then
 	exit ${ERR_DEST}
 fi
 
+# Unified decompression
+#	$1: compressed file
+#	$2: decompression target
+function dec() {
+	if [ $# -ne 2 ]; then
+		return 1
+	fi
+
+	local format=`file -b "$1" | awk '{print $1}'`
+	if [[ ${format} == gzip ]]; then
+		tar xzf "$1" -C "$2" || (echo "Decompress $1 ($format) failed"; return 1)
+	elif [[ ${format} == XZ ]]; then
+		tar xJf "$1" -C "$2" || (echo "Decompress $1 ($format) failed"; return 1)
+	elif [[ ${format} == bzip2 ]]; then
+		tar xjf "$1" -C "$2" || (echo "Decompress $1 ($format) failed"; return 1)
+	elif [[ ${format} == compress\'d ]]; then
+		tar xZf "$1" -C "$2" || (echo "Decompress $1 ($format) failed"; return 1)
+	elif [[ ${format} == Zip ]]; then
+		unzip "$1" -d "$2" || (echo "Decompress $1 ($format) failed"; return 1)
+	elif [[ ${format} == 7-zip ]]; then
+		7z x "$1" -o"$2" || (echo "Decompress $1 ($format) failed"; return 1)
+	elif [[ ${format} == RAR ]]; then
+		unrar x "$1" "$2" || (echo "Decompress $1 ($format) failed"; return 1)
+	else
+		echo "Unknown compression format `file -b "$1"`"; return 1
+	fi
+
+	return 0
+}
+
 # Create temporary directory
 TEMP_DIR=
 function gen_temp_dir()
@@ -97,6 +131,13 @@ function gen_temp_dir()
 	if [ ! -d "${TEMP_DIR}" ]; then
 		echo "Error: failed to create temporary directory"
 		return ${ERR_TEMP}
+	fi
+
+	if [[ ${APPEND} -eq 1 && -f ${OUT_DIR}/${OUT_FILE} ]]; then
+		dec ${OUT_DIR}/${OUT_FILE} ${TEMP_DIR}
+		if [ $? -ne 0 ]; then
+			return ${ERR_TEMP}
+		fi
 	fi
 
 	# Create old and new directories
