@@ -169,7 +169,14 @@ function gen_diff_files_to_dirs() {
 	
 	# Parse git diff results line by line and generate files from blob objects
 	while IFS=$'\t :' read -r -a DIFF_FILE ; do
+		NEW_MODE=${DIFF_FILE[2]}
 		DIFF_TYPE=${DIFF_FILE[5]}
+
+		# Skip submodule
+		if [ "${NEW_MODE}" == "160000" ]; then
+			continue
+		fi
+
 		case "${DIFF_TYPE::1}" in
 			M)	# Modified
 				#echo "(M)odify ${DIFF_FILE[6]}"
